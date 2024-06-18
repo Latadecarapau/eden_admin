@@ -38,7 +38,7 @@ if (isset($_POST['modify'])) {
 }
 
 
-$sql = "SELECT * FROM reservations WHERE 1=1";
+$sql = "SELECT * FROM reservations inner join exhibit_rooms on reservations.room_number = exhibit_rooms.room_number inner join rooms on exhibit_rooms.id_room = rooms.id_room WHERE 1=1";
 
 if (!empty($search)) {
     $sql .= " AND (name LIKE '%$search%' OR email LIKE '%$search%')";
