@@ -1,5 +1,4 @@
 <?php
-
 $host = "localhost";
 $username = "root";
 $password = "";
@@ -18,13 +17,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_room = $_POST["id_room"];
     $capacity = $_POST["capacity"];
     $price = $_POST["price"];
+    $Description = $_POST["Description"];
+    $images = $_FILES["images"];
 
-    $sql = "INSERT INTO exhibit_rooms (room_name, room_number, id_room, capacity, price) 
-            VALUES ('$room_name', '$room_number', '$id_room', '$capacity', '$price')";
+    // Insert room data
+    $sql = "INSERT INTO exhibit_rooms (room_name, room_number, id_room, capacity, price, Description) 
+            VALUES ('$room_name', '$room_number', '$id_room', '$capacity', '$price', '$Description')";
 
     if ($conn->query($sql) === TRUE) {
-        echo "Quarto adicionado com successo!";
+        // Handle image uploads
+        $upload_dir = "uploads/";
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
 
+        foreach ($images['tmp_name'] as $key => $tmp_name) {
+            $file_name = basename($images['name'][$key]);
+            $file_path = $upload_dir . $file_name;
+
+            if (move_uploaded_file($tmp_name, $file_path)) {
+                // Insert image path and room_number into room_images table
+                $image_sql = "INSERT INTO room_images (room_number, image_url) VALUES ('$room_number', '$file_path')";
+                if (!$conn->query($image_sql)) {
+                    echo "Error: " . $image_sql . "<br>" . $conn->error;
+                }
+            } else {
+                echo "Failed to upload file: " . $file_name;
+            }
+        }
+
+        echo "Quarto adicionado com sucesso!";
         header("Location: consultroom.php");
         exit();
     } else {
@@ -34,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
-
 <span style="font-family: verdana, geneva, sans-serif;">
     <!DOCTYPE html>
     <html lang="en">
@@ -114,7 +135,7 @@ $conn->close();
                     <p>Eden Dash</p>
                 </div>
                 <div class="main-body">
-                    <form action="makeroom.php" method="post" style="margin-left: 200px;">
+                    <form action="makeroom.php" method="post" enctype="multipart/form-data" style="margin-left: 200px;">
                         <h2>Formulário dos Quartos</h2>
                         <div class="form-group">
                             <label for="room_name">Nome do Quarto:</label>
@@ -127,7 +148,7 @@ $conn->close();
                                 placeholder="Digite o Número do quarto" required>
                         </div>
                         <div class="form-group">
-                            <label for="id_room">Tipo de Quarto</label>
+                            <label for="id_room">Tipo de Quarto:</label>
                             <select name="id_room" id="id_room">
                                 <option value="" disabled selected>Selecione o tipo de quarto</option>
                                 <option id="1" value="1">Deluxe</option>
@@ -143,6 +164,15 @@ $conn->close();
                         <div class="form-group">
                             <label for="price">Preço:</label>
                             <input type="text" name="price" id="price" placeholder="Digite o Preço" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Description">Descrição:</label>
+                            <input type="text" name="Description" id="Description" placeholder="Digite a Descrição"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="images">Imagens do Quarto:</label>
+                            <input type="file" name="images[]" id="images" multiple>
                         </div>
                         <button type="submit">Submit</button>
                     </form>

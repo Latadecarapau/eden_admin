@@ -18,11 +18,33 @@ if (isset($_POST['delete'])) {
     $id_to_delete = $_POST['id_to_delete'];
     $sql_delete = "DELETE FROM exhibit_rooms WHERE room_number='$id_to_delete'";
     if ($conn->query($sql_delete) === TRUE) {
-       
+
     } else {
         echo "Error deleting record: " . $conn->error;
     }
 }
+
+/* if (isset($_POST['modify'])) {
+    $staff_id = $_POST['staff_select'];
+    $new_name = $_POST['new_name'];
+    $new_email = $_POST['new_email'];
+    $new_phone = $_POST['new_phone'];
+
+    $updates = [];
+    if (!empty($new_name))
+        $updates[] = "namestaff='$new_name'";
+    if (!empty($new_email))
+        $updates[] = "email='$new_email'";
+    if (!empty($new_phone))
+        $updates[] = "phone='$new_phone'";
+
+    if (!empty($updates)) {
+        $sql_modify = "UPDATE staff SET " . implode(', ', $updates) . " WHERE id_staff='$staff_id'";
+        if ($conn->query($sql_modify) !== TRUE) {
+            echo "Error updating record: " . $conn->error;
+        }
+    }
+} */
 
 
 $sql = "SELECT * FROM exhibit_rooms INNER JOIN rooms on rooms.id_room = exhibit_rooms.id_room WHERE 1=1";
@@ -137,7 +159,7 @@ $result = $conn->query($sql);
                         <option value="Z-A" <?php if ($sort == 'Z-A')
                             echo 'selected'; ?>>Z-A</option>
                     </select>
-                    <button class="deleteButton" id="deleteButton">Apagar Quarto</button>
+                    <button class="modifyButton" id="modifyButton">Modificar</button>
                 </div>
                 <div class="row">
                     <table>
@@ -167,39 +189,54 @@ $result = $conn->query($sql);
                 </div>
             </div>
         </section>
-         <!-- Delete Modal -->
-         <div id="deleteModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Apagar Quarto</h2>
-                    <form method="POST" action="">
-                        <label for="id_to_delete">Digite o Número do Qaurto a eliminar:</label>
-                        <input type="text" id="id_to_delete" name="id_to_delete" required>
-                        <button type="submit" name="delete">Apagar</button>
-                    </form>
-                </div>
+        <!-- Modify Modal -->
+       <!--  <div id="modifyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Modificar Membro Staff</h2>
+                <form method="POST" action="">
+                    <label for="staff_select">Escolha o Staff a modificar:</label>
+                    <select id="staff_select" name="staff_select">
+                        <?php
+                      /*   $result->data_seek(0); // Reset result set pointer
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row["id_staff"] . "'>" . $row["namestaff"] . "</option>";
+                            }
+                        } */
+                        ?>
+                    </select>
+                    <label for="new_name">Novo Nome:</label>
+                    <input type="text" id="new_name" name="new_name">
+                    <label for="new_email">Novo Email:</label>
+                    <input type="email" id="new_email" name="new_email">
+                    <label for="new_phone">Novo Telefone:</label>
+                    <input type="text" id="new_phone" name="new_phone">
+                    <button type="submit" name="modify">Modificar</button>
+                </form>
             </div>
+        </div> -->
 
-            <script>
-                var modal = document.getElementById("deleteModal");
-                var btn = document.getElementById("deleteButton");
-                var span = document.getElementsByClassName("close")[0];
-                btn.onclick = function () {
-                    modal.style.display = "block";
-                }
+        <script>
+            var modal = document.getElementById("deleteModal");
+            var btn = document.getElementById("deleteButton");
+            var span = document.getElementsByClassName("close")[0];
+            btn.onclick = function () {
+                modal.style.display = "block";
+            }
 
 
-                span.onclick = function () {
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
                     modal.style.display = "none";
                 }
-
-
-                window.onclick = function (event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-            </script>
+            }
+        </script>
         <script src="rooms.js"></script>
     </div>
 </body>
