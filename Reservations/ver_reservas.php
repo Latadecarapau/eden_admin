@@ -165,7 +165,7 @@ $result = $conn->query($sql);
                             <th>Check in</th>
                             <th>Check out</th>
                             <th>Guests</th>
-                            <th>Data da reserva</th>
+                            <th>Data de Criação </th>
                         </tr>
                         <?php
 
@@ -205,6 +205,7 @@ $result = $conn->query($sql);
                 </form>
             </div>
         </div>
+
 
         <!-- Modify Modal -->
         <div id="modifyModal" class="modal">
